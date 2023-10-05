@@ -34,7 +34,7 @@ const HomePageOrRoom = () => {
   useEffect(() => {
     axios.get("/api/user-in-room/").then((response) => {
       setRoomCode(response.data.code);
-      console.log(roomCode);
+      console.log(response);
     });
   }, []);
 

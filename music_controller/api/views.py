@@ -39,6 +39,16 @@ class UserInRoom(generics.GenericAPIView):
         return JsonResponse(data, status=status.HTTP_200_OK)
 
 
+class LeaveRoom(generics.GenericAPIView):
+    def post(self, request):
+        if "room_code" in self.request.session:
+            self.request.session.pop("room_code")
+            host_id = self.request.session.session_key
+            room = generics.get_object_or_404(Room, host=host_id)
+            room.delete()
+        return Response({"Message": "Success"}, status=status.HTTP_200_OK)
+
+
 class JoinRoom(generics.GenericAPIView):
     lookup_url_kwarg = "code"
 
