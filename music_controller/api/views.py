@@ -5,7 +5,7 @@ from rest_framework import status
 from django.http import JsonResponse
 
 from .models import Room
-from .serializers import RoomSerializer, CreateRoomSerializer
+from .serializers import RoomSerializer, CreateRoomSerializer, UpdateRoomSerializer
 
 
 class RoomView(generics.ListAPIView):
@@ -105,4 +105,33 @@ class CreateRoomView(generics.CreateAPIView):
 
         return Response(
             {"Bad Request": "Invlaid data..."}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+
+class UpdateView(generics.GenericAPIView):
+    serializer_class = UpdateRoomSerializer
+
+    def patch(self, request):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            guest_can_pause = serializer.data.get("guest_can_pause")
+            votes_to_skip = serializer.data.get("votes_to_skip")
+            code = serializer.data.get("code")
+            room = generics.get_object_or_404(Room, code=code)
+            user_id = self.request.session.session_key
+            if room.host != user_id:
+                return Response(
+                    {"Msg": "You are not the host of this room"},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            room.guest_can_pause = guest_can_pause
+            room.votes_to_skip = votes_to_skip
+            room.save(update_fields=["guest_can_pause", "votes_to_kip"])
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(
+            {"Bad Request": "Invalid Data..."}, status=status.HTTP_400_BAD_REQUEST
         )

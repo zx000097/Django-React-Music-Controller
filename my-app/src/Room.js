@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Grid, Button, Typography } from "@mui/material";
+import CreateRoomPage from "./CreateRoomPage";
 
 export default function Room(props) {
   let params = useParams();
@@ -10,9 +11,55 @@ export default function Room(props) {
     votesToSkip: 2,
     guestCanPause: false,
     isHost: false,
+    showSettings: false,
   });
   const leaveButtonPressed = () => {
     axios.post("/api/leave-room").then((_response) => navigate("/"));
+  };
+  const updateShowSettings = (value) => {
+    setState((prevState) => {
+      return {
+        ...prevState,
+        showSettings: value,
+      };
+    });
+  };
+  const renderSettingsButton = () => {
+    return (
+      <Grid item xs={12} align="center">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => updateShowSettings(true)}
+        >
+          Settings
+        </Button>
+      </Grid>
+    );
+  };
+  const renderSettings = () => {
+    return (
+      <Grid container spacing={1} align="center">
+        <Grid item xs={12}>
+          <CreateRoomPage
+            update={true}
+            votesToSkip={state.votesToSkip}
+            guestCanPause={state.guestCanPause}
+            roomCode={state.roomCode}
+            updateCallBack={null}
+          />
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => updateShowSettings(false)}
+          >
+            Close
+          </Button>
+        </Grid>
+      </Grid>
+    );
   };
 
   useEffect(() => {
@@ -38,6 +85,9 @@ export default function Room(props) {
       });
   };
 
+  if (state.showSettings) {
+    return renderSettings();
+  }
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
@@ -60,6 +110,7 @@ export default function Room(props) {
           Host: {state.isHost.toString()}
         </Typography>
       </Grid>
+      {state.isHost ? renderSettingsButton() : null}
       <Grid item xs={12} align="center">
         <Button
           variant="contained"
