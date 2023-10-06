@@ -81,29 +81,15 @@ export default function CreateRoomPage(props) {
   };
 
   const title = props.update ? "Update Room" : "Create a Room";
+  const alertSeverity = msg.includes("error") ? "error" : "success";
+
   return (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
         <Collapse in={msg != ""}>
-          {msg.includes("success") ? (
-            <Alert
-              severity="success"
-              onClose={() => {
-                setMsg("");
-              }}
-            >
-              {msg}
-            </Alert>
-          ) : (
-            <Alert
-              severity="error"
-              onClose={() => {
-                setMsg("");
-              }}
-            >
-              {msg}
-            </Alert>
-          )}
+          <Alert severity={alertSeverity} onClose={() => setMsg("")}>
+            {msg}
+          </Alert>
         </Collapse>
       </Grid>
       <Grid item xs={12} align="center">
