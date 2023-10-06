@@ -46,14 +46,16 @@ export default function Room(props) {
             votesToSkip={state.votesToSkip}
             guestCanPause={state.guestCanPause}
             roomCode={state.roomCode}
-            updateCallBack={null}
           />
         </Grid>
         <Grid item xs={12} align="center">
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => updateShowSettings(false)}
+            onClick={() => {
+              updateShowSettings(false);
+              getRoom();
+            }}
           >
             Close
           </Button>
