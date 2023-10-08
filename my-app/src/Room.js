@@ -13,6 +13,7 @@ export default function Room(props) {
     isHost: false,
     showSettings: false,
   });
+  const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
   const leaveButtonPressed = () => {
     axios.post("/api/leave-room").then((_response) => navigate("/"));
   };
@@ -78,6 +79,10 @@ export default function Room(props) {
           guestCanPause: response.data.guest_can_pause,
           isHost: response.data.is_host,
         });
+
+        if (state.isHost) {
+          authenticateSpotify();
+        }
         console.log(state);
       })
       .catch(function (error) {
@@ -85,6 +90,17 @@ export default function Room(props) {
           navigate("/");
         }
       });
+  };
+
+  const authenticateSpotify = () => {
+    axios.get("/spotify/is-authenticated").then((response) => {
+      setSpotifyAuthenticated(response.data.status);
+      if (!spotifyAuthenticated) {
+        axios.get("/spotify/get-auth-url").then((response) => {
+          window.location.replace(response.data.url)
+        });
+      }
+    });
   };
 
   if (state.showSettings) {
