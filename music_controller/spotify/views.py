@@ -57,6 +57,8 @@ def spotify_callback(request):
         request.session.session_key, access_token, token_type, expires_in, refresh_token
     )
 
+    return redirect("http://127.0.0.1:3000/")
+
 
 class IsAuthenticated(APIView):
     def get(self, request):
