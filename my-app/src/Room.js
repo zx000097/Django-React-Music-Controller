@@ -80,10 +80,12 @@ export default function Room(props) {
           isHost: response.data.is_host,
         });
 
-        if (state.isHost) {
+        console.log(response);
+        console.log(state.isHost);
+
+        if (response.data.is_host) {
           authenticateSpotify();
         }
-        console.log(state);
       })
       .catch(function (error) {
         if (error.response.status === 404) {
@@ -95,9 +97,10 @@ export default function Room(props) {
   const authenticateSpotify = () => {
     axios.get("/spotify/is-authenticated").then((response) => {
       setSpotifyAuthenticated(response.data.status);
-      if (!spotifyAuthenticated) {
+      if (!response.data.status) {
+        console.log(response.data);
         axios.get("/spotify/get-auth-url").then((response) => {
-          window.location.replace(response.data.url)
+          window.location.replace(response.data.url);
         });
       }
     });

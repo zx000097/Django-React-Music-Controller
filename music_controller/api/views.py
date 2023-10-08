@@ -83,16 +83,14 @@ class CreateRoomView(generics.CreateAPIView):
             guest_can_pause = serializer.data.get("guest_can_pause")
             votes_to_skip = serializer.data.get("votes_to_skip")
             host = self.request.session.session_key
-            queryset = Room.objects.filter(host=host)
-
-            if queryset.exists():
-                room = queryset[0]
+            try:
+                room = Room.objects.get(host=host)
                 room.guest_can_pause = guest_can_pause
                 room.votes_to_skip = votes_to_skip
                 room.save(update_fields=["guest_can_pause", "votes_to_skip"])
                 self.request.session["room_code"] = room.code
                 return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
-            else:
+            except Room.DoesNotExist:
                 room = Room(
                     host=host,
                     guest_can_pause=guest_can_pause,
@@ -100,9 +98,9 @@ class CreateRoomView(generics.CreateAPIView):
                 )
                 self.request.session["room_code"] = room.code
                 room.save()
-
-            return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
-
+                return Response(
+                    RoomSerializer(room).data, status=status.HTTP_201_CREATED
+                )
         return Response(
             {"Bad Request": "Invlaid data..."}, status=status.HTTP_400_BAD_REQUEST
         )
