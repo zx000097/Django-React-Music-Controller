@@ -1,6 +1,6 @@
 from django.utils import timezone
 from datetime import timedelta
-from requests import post
+from pip._vendor.requests import post
 
 from .models import SpotifyToken
 from .credentials import CLIENT_ID, CLIENT_SECRET
