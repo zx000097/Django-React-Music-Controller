@@ -100,9 +100,7 @@ export default function CreateRoomPage(props) {
       </Grid>
       <Grid item xs={12} align="center">
         <FormControl component="fieldset">
-          <FormHelperText>
-            <div align="center">Guest Control of Playback State</div>
-          </FormHelperText>
+          <FormHelperText>Guest Control of Playback State </FormHelperText>
           <RadioGroup
             row
             defaultValue={props.guestCanPause.toString()}
@@ -135,9 +133,7 @@ export default function CreateRoomPage(props) {
             }}
             onChange={(e) => setVotesToSkip(e.target.value)}
           />
-          <FormHelperText>
-            <div align="center">Votes Required To Skip Song</div>
-          </FormHelperText>
+          <FormHelperText>Votes Required To Skip Song</FormHelperText>
         </FormControl>
       </Grid>
       {props.update ? renderUpdateButtons() : renderCreateButtons()}
