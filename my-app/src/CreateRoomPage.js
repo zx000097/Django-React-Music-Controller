@@ -35,6 +35,7 @@ export default function CreateRoomPage(props) {
       guest_can_pause: guestCanPause,
       code: props.roomCode,
     };
+    console.log(requestData);
     axios
       .patch("/api/update-room/", requestData)
       .then((response) => {
@@ -105,7 +106,7 @@ export default function CreateRoomPage(props) {
           <RadioGroup
             row
             defaultValue={props.guestCanPause.toString()}
-            onChange={(e) => setGuestCanPause(e.target.value === true)}
+            onChange={(e) => setGuestCanPause(e.target.value)}
           >
             <FormControlLabel
               value={true}
