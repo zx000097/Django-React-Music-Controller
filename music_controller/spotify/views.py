@@ -3,9 +3,11 @@ from rest_framework.views import APIView
 from pip._vendor.requests import Request, post
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.generics import get_object_or_404
 
 from .credentials import REDIRECT_URI, CLIENT_SECRET, CLIENT_ID
-from .util import update_or_create_user_tokens, is_spotify_authenticated
+from .util import *
+from api.models import Room
 
 
 class AuthURL(APIView):
@@ -64,3 +66,41 @@ class IsAuthenticated(APIView):
     def get(self, request):
         is_authenticated = is_spotify_authenticated(self.request.session.session_key)
         return Response({"status": is_authenticated}, status=status.HTTP_200_OK)
+
+
+class CurrentSong(APIView):
+    def get(self, request):
+        room_code = self.request.session.get("room_code")
+        room = get_object_or_404(Room, code=room_code)
+        host = room.host
+        endpoint = "player/currently-playing"
+        response = execute_spotify_api_request(host, endpoint)
+        if "error" in response or "item" not in response:
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        item = response.get("item")
+        duration = item.get("duration_ms")
+        progress = response.get("progress_ms")
+        album_cover = item.get("album").get("images")[0].get("url")
+        is_playing = response.get("is_playing")
+        song_id = item.get("id")
+
+        artist_string = ""
+        for i, artist in enumerate(item.get("artists")):
+            if i > 0:
+                artist_string += ", "
+            name = artist.get("name")
+            artist_string += name
+
+        song = {
+            "title": item.get("name"),
+            "artist": artist_string,
+            "duration": duration,
+            "time": progress,
+            "image_url": album_cover,
+            "is_playing": is_playing,
+            "votes": 0,
+            "id": song_id,
+        }
+
+        return Response(song, status=status.HTTP_200_OK)
