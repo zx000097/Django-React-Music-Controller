@@ -20,6 +20,10 @@ const playSong = () => {
   axios.put("/spotify/play");
 };
 
+const skipSong = () => {
+  axios.post("/spotify/skip");
+};
+
 export default function MusicPlayer(props) {
   const songProgress = (props.time / props.duration) * 100;
 
