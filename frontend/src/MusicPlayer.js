@@ -10,6 +10,15 @@ import {
 import PauseIcon from "@mui/icons-material/Pause";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
+import axios from "axios";
+
+const pauseSong = () => {
+  axios.put("/spotify/pause");
+};
+
+const playSong = () => {
+  axios.put("/spotify/play");
+};
 
 export default function MusicPlayer(props) {
   const songProgress = (props.time / props.duration) * 100;
@@ -28,7 +37,10 @@ export default function MusicPlayer(props) {
             {props.artist}
           </Typography>
           <div>
-            <IconButton>
+            <IconButton
+              disabled={!props.can_play_pause}
+              onClick={props.is_playing ? pauseSong : playSong}
+            >
               {props.is_playing ? <PauseIcon /> : <PlayArrowIcon />}
             </IconButton>
             <IconButton>

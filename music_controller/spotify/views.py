@@ -101,6 +101,29 @@ class CurrentSong(APIView):
             "is_playing": is_playing,
             "votes": 0,
             "id": song_id,
+            "can_play_pause": can_pause(self.request.session.session_key, room),
         }
 
         return Response(song, status=status.HTTP_200_OK)
+
+
+class PauseSong(APIView):
+    def put(self, response):
+        room_code = self.request.session.get("room_code")
+        room = get_object_or_404(Room, code=room_code)
+        if can_pause(self.request.session.session_key, room):
+            pause_song(room.host)
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        return Response({}, status=status.HTTP_403_FORBIDDEN)
+
+
+class PlaySong(APIView):
+    def put(self, response):
+        room_code = self.request.session.get("room_code")
+        room = get_object_or_404(Room, code=room_code)
+        if can_pause(self.request.session.session_key, room):
+            play_song(room.host)
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+        return Response({}, status=status.HTTP_403_FORBIDDEN)

@@ -73,6 +73,10 @@ def refresh_spotify_token(session_id):
     )
 
 
+def can_pause(session_id, room):
+    return session_id == room.host or room.guest_can_pause
+
+
 def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False):
     token = get_user_token(session_id)
     headers = {
@@ -89,3 +93,11 @@ def execute_spotify_api_request(session_id, endpoint, post_=False, put_=False):
         return response.json()
     except Exception as e:
         return {"Error": e}
+
+
+def play_song(session_id):
+    return execute_spotify_api_request(session_id, "player/play", put_=True)
+
+
+def pause_song(session_id):
+    return execute_spotify_api_request(session_id, "player/pause", put_=True)
