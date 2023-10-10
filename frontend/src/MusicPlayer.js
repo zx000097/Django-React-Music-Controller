@@ -34,10 +34,10 @@ export default function MusicPlayer(props) {
           <img src={props.image_url} height="100%" width="100%" />
         </Grid>
         <Grid item align="center" xs={8}>
-          <Typography component="h5" variant="h5" fontSize="42px">
+          <Typography component="h5" variant="h5">
             {props.title}
           </Typography>
-          <Typography color="textSecondary" variant="subtitle1" fontSize="32px">
+          <Typography color="textSecondary" variant="subtitle1">
             {props.artist}
           </Typography>
           <div>
@@ -45,35 +45,10 @@ export default function MusicPlayer(props) {
               disabled={!props.can_play_pause}
               onClick={props.is_playing ? pauseSong : playSong}
             >
-              {props.is_playing ? (
-                <PauseIcon
-                  style={{
-                    maxWidth: "50px",
-                    maxHeight: "50px",
-                    minWidth: "50px",
-                    minHeight: "50px",
-                  }}
-                />
-              ) : (
-                <PlayArrowIcon
-                  style={{
-                    maxWidth: "50px",
-                    maxHeight: "50px",
-                    minWidth: "50px",
-                    minHeight: "50px",
-                  }}
-                />
-              )}
+              {props.is_playing ? <PauseIcon /> : <PlayArrowIcon />}
             </IconButton>
             <IconButton onClick={skipSong}>
-              <SkipNextIcon
-                style={{
-                  maxWidth: "50px",
-                  maxHeight: "50px",
-                  minWidth: "50px",
-                  minHeight: "50px",
-                }}
-              />
+              <SkipNextIcon />
             </IconButton>
           </div>
         </Grid>
