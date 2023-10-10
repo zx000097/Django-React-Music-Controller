@@ -139,7 +139,9 @@ export default function Room(props) {
           Code: {state.roomCode}
         </Typography>
       </Grid>
-      <MusicPlayer {...song} />
+      <Grid item xs={12} align="center">
+        <MusicPlayer {...song} />
+      </Grid>
       {state.isHost ? renderSettingsButton() : null}
       <Grid item xs={12} align="center">
         <Button
