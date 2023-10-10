@@ -118,15 +118,10 @@ export default function Room(props) {
   };
 
   const getCurrentSong = () => {
-    axios
-      .get("/spotify/current-song")
-      .then((response) => {
-        setSong(response.data);
-        console.log(response.data);
-      })
-      .catch(function (error) {
-        setSong({});
-      });
+    axios.get("/spotify/current-song").then((response) => {
+      setSong(response.data);
+      console.log(response.data);
+    });
   };
 
   if (state.showSettings) {

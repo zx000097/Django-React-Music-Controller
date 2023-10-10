@@ -51,6 +51,7 @@ export default function MusicPlayer(props) {
               <SkipNextIcon />
             </IconButton>
           </div>
+          {props.votes} / {props.votes_required}
         </Grid>
       </Grid>
       <LinearProgress variant="determinate" value={songProgress} />

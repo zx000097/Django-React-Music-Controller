@@ -8,6 +8,7 @@ from rest_framework.generics import get_object_or_404
 from .credentials import REDIRECT_URI, CLIENT_SECRET, CLIENT_ID
 from .util import *
 from api.models import Room
+from .models import Vote
 
 
 class AuthURL(APIView):
@@ -92,6 +93,8 @@ class CurrentSong(APIView):
             name = artist.get("name")
             artist_string += name
 
+        votes = room.vote_set.all().filter(song_id=song_id)
+
         song = {
             "title": item.get("name"),
             "artist": artist_string,
@@ -99,12 +102,20 @@ class CurrentSong(APIView):
             "time": progress,
             "image_url": album_cover,
             "is_playing": is_playing,
-            "votes": 0,
+            "votes": len(votes),
+            "votes_required": room.votes_to_skip,
             "id": song_id,
             "can_play_pause": can_pause(self.request.session.session_key, room),
         }
 
+        self.update_room_song(room, song_id)
         return Response(song, status=status.HTTP_200_OK)
+
+    def update_room_song(self, room, song_id):
+        if room.current_song != song_id:
+            room.current_song = song_id
+            room.save(update_fields=["current_song"])
+            room.vote_set.all().delete()
 
 
 class PauseSong(APIView):
@@ -133,10 +144,23 @@ class SkipSong(APIView):
     def post(self, request):
         room_code = self.request.session.get("room_code")
         room = get_object_or_404(Room, code=room_code)
+        votes = room.vote_set.all().filter(song_id=room.current_song)
+        votes_needed = room.votes_to_skip
 
-        if self.request.session.session_key == room.host:
+        if votes.filter(user=self.request.session.session_key):
+            pass
+        elif (
+            self.request.session.session_key == room.host
+            or len(votes) + 1 >= votes_needed
+        ):
+            votes.delete()
             skip_song(room.host)
         else:
-            pass
+            vote = Vote(
+                user=self.request.session.session_key,
+                room=room,
+                song_id=room.current_song,
+            )
+            vote.save()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
